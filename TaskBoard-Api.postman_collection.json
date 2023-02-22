@@ -1,0 +1,283 @@
+{
+	"info": {
+		"_postman_id": "ae55f624-68aa-4bba-bc66-47090eaf80c2",
+		"name": "TaskBoard-Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17589417"
+	},
+	"item": [
+		{
+			"name": "BOARDS",
+			"item": [
+				{
+					"name": "Get-All-boards",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check if status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Check if response is json\", function () {\r",
+									"    //pm.response.to.be.json;\r",
+									"    const reponseBody = pm.response.json();\r",
+									"    pm.expect(typeof(reponseBody)).to.eql(\"object\");\r",
+									"    \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-type\")).to.be.eql(\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"    \r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://taskboardjs.{{user}}.repl.co/api/boards",
+							"protocol": "https",
+							"host": [
+								"taskboardjs",
+								"{{user}}",
+								"repl",
+								"co"
+							],
+							"path": [
+								"api",
+								"boards"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TASKS",
+			"item": [
+				{
+					"name": "GET",
+					"item": [
+						{
+							"name": "Get_All_Done_Tasks",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Check if status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Check all done tasks\", function () {\r",
+											"    const responseBody = pm.response.json();\r",
+											"\r",
+											"    for(let i = 0; i < responseBody.length; i++){\r",
+											"        pm.expect(responseBody[i].board.name, \"Board name property\").to.be.eql(\"Done\");\r",
+											"        \r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://taskboardjs.{{user}}.repl.co/api/tasks/board/done",
+									"protocol": "https",
+									"host": [
+										"taskboardjs",
+										"{{user}}",
+										"repl",
+										"co"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"board",
+										"done"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "POST",
+					"item": [
+						{
+							"name": "Create_task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//  assert the returned code is 201 or 202\r",
+											"pm.test(\"Successful POST request status code 201 or 202\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+											"});\r",
+											"\r",
+											"const respBody = pm.response.json();\r",
+											"// set and save task's id and use it as a variable \r",
+											"pm.environment.set(\"taskId\", respBody.task.id);\r",
+											"    \r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"title\": \"Add Task\", \r\n   \"description\": \"Some descr API + UI tests\",\r\n    \"board\": \"Open\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://taskboardjs.{{user}}.repl.co/api/tasks",
+									"protocol": "https",
+									"host": [
+										"taskboardjs",
+										"{{user}}",
+										"repl",
+										"co"
+									],
+									"path": [
+										"api",
+										"tasks"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "PATCH",
+					"item": [
+						{
+							"name": "Change_created_task_name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Assert thar task title was changed\", function () {\r",
+											"    const resBody = pm.response.json();\r",
+											"    pm.expect(resBody.task.title, \"Task ID\").equals(\"Changed task title\");\r",
+											"    pm.expect(resBody.task.title, \"Task ID\").is.not.empty;\r",
+											"    pm.expect(typeof(resBody.task.title)).to.be.equal(\"string\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Changed task title\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://taskboardjs.{{user}}.repl.co/api/tasks/{{taskId}}",
+									"protocol": "https",
+									"host": [
+										"taskboardjs",
+										"{{user}}",
+										"repl",
+										"co"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{taskId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "DELETE",
+					"item": [
+						{
+							"name": "Delete_created_task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Assert that task was deleted\", function () {\r",
+											"    const resBody = pm.response.json();\r",
+											"    // assert that the respective message was displayed and the respective id -> E.g. \"msg\": \"Task deleted: 15\"\r",
+											"    pm.expect(resBody.msg, \"MSG Property\").to.be.equal(\"Task deleted: \" + pm.environment.get(\"taskId\"));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://taskboardjs.{{user}}.repl.co/api/tasks/{{taskId}}",
+									"protocol": "https",
+									"host": [
+										"taskboardjs",
+										"{{user}}",
+										"repl",
+										"co"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{taskId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
